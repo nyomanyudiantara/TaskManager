@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import api from '../api/api';
 
-interface TaskFormProps {
+export interface TaskFormProps {
   task: Task | null;
   onClose: () => void;
   onSave: () => void;
