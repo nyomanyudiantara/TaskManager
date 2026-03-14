@@ -71,8 +71,12 @@ app.post('/users/login', async (req, res) => {
 // Add this to index.js
 app.get('/tasks/my-tasks', authenticate, async (req, res) => {
   try {
-    // ONLY select tasks belonging to req.user.id
-    const [rows] = await pool.query('SELECT * FROM tasks WHERE user_id = ?', [req.user.id]);
+    // We select all columns from tasks, plus the 'name' from the users table
+    const [rows] = await pool.query(`
+      SELECT tasks.*, users.name AS creator_name 
+      FROM tasks 
+      JOIN users ON tasks.user_id = users.id
+    `);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -98,17 +102,17 @@ app.put('/tasks/:id', authenticate, async (req, res) => {
   const { id } = req.params;
   const { title, description, completed } = req.body;
   
+  // Get the name of the current user from the 'users' table
+  const [userRows] = await pool.query('SELECT name FROM users WHERE id = ?', [req.user.id]);
+  const editorName = userRows[0].name;
+
   try {
-    // We include user_id in the WHERE clause for security!
     const [result] = await pool.query(
-      'UPDATE tasks SET title = ?, description = ?, completed = ? WHERE id = ? AND user_id = ?',
-      [title, description, completed, id, req.user.id]
+      'UPDATE tasks SET title = ?, description = ?, completed = ?, edited_by = ? WHERE id = ?',
+      [title, description, completed, editorName, id]
     );
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Task not found or unauthorized' });
-    }
-
+    if (result.affectedRows === 0) return res.status(404).json({ message: 'Task not found' });
     res.json({ message: 'Task updated successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -120,13 +124,12 @@ app.delete('/tasks/:id', authenticate, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [result] = await pool.query(
-      'DELETE FROM tasks WHERE id = ? AND user_id = ?',
-      [id, req.user.id]
-    );
+    // REMOVED 'AND user_id = ?'
+    // Now any authenticated user can delete any task by its ID
+    const [result] = await pool.query('DELETE FROM tasks WHERE id = ?', [id]);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Task not found or unauthorized' });
+      return res.status(404).json({ message: 'Task not found' });
     }
 
     res.json({ message: 'Task deleted successfully' });
