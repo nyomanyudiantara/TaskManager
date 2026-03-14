@@ -1,0 +1,20 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+  font-family: 'Archivo', sans-serif; /* This changes it for everything */
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Archivo', sans-serif; /* This changes it for everything */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure buttons and inputs inherit the font too */
+button, input, textarea, select {
+  font-family: 'Archivo', sans-serif;
+}
