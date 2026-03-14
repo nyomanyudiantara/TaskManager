@@ -1,4 +1,4 @@
-Task Management System
+Task Manager System
 ======================
 
 A full-stack Task Management application featuring user authentication and CRUD (Create, Read, Update, Delete) capabilities.
