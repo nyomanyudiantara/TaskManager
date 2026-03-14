@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import api from '../api/api';
 
+interface TaskFormProps {
+  task: Task | null;
+  onClose: () => void;
+  onSave: () => void;
+}
+
 const TaskForm = ({ task, onClose, onSave }) => {
   const [title, setTitle] = useState(task?.title || '');
   const [desc, setDesc] = useState(task?.description || '');

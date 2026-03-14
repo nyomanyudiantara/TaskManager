@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/api';
-import { Task } from '../types/auth';
+import type { Task } from '../types/auth';
 import { useNavigate } from 'react-router-dom';
 import TaskForm from './TaskForm'; // Ensure the path is correct
 
